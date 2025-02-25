@@ -36,7 +36,18 @@ def index(request):
 
 
 def songs(request):
-    songs = {"songs":[{"id":1,"title":"duis faucibus accumsan odio curabitur convallis","lyrics":"Morbi non lectus. Aliquam sit amet diam in magna bibendum imperdiet. Nullam orci pede, venenatis non, sodales sed, tincidunt eu, felis."}]}
+    try:
+        response = req.get(
+            "http://songs-sn-labs-mrjako.labs-prod-openshift-san-a45631dc5778dc6371c67d206ba9ae5c-0000.us-east.containers.appdomain.cloud/songs",
+            timeout=10,  # Optional: Increase timeout to 10 seconds
+            verify=False  # Disable SSL verification
+        )
+        response.raise_for_status()  # Raise an error for 4xx and 5xx status codes
+        songs = response.json()
+    except req.exceptions.RequestException as e:
+        print("Error fetching songs:", e)
+        songs = []
+
     return render(request, "songs.html", {"songs": [songs]})
     
 
